@@ -1,67 +1,83 @@
 (function (modules) {
-  // 基于文件路径找到对应函数
-  function require(id) {
+// 基于文件路径找到对应函数
+function require(id) {
 
-    // 找到对应的函数
-    const [fn, mapping] = modules[id]
+// 找到对应的函数
+const [fn, mapping] = modules[id]
 
-    const module = {
-      exports: {}
-    }
+const module = {
+exports: {}
+}
 
-    // 当调用require要变，现在变为id了
-    function localRequire(filePath) {
-      const id = mapping[filePath]
-      return require(id)
-    }
+// 当调用require要变，现在变为id了
+function localRequire(filePath) {
+const id = mapping[filePath]
+return require(id)
+}
 
-    fn(localRequire, module, module.exports)
+fn(localRequire, module, module.exports)
 
-    return module.exports
-  }
+return module.exports
+}
 
-  // 需要执行当前的入口文件mainjs
-  require(0)
+// 需要执行当前的入口文件mainjs
+require(0)
 
 
 })({
 
-  "0": [function (require, module, exports) {
-    "use strict";
+    "0": [function (require, module, exports) {
+        "use strict";
 
-    var _foo = require("./foo.js");
+var _foo = require("./foo.js");
 
-    (0, _foo.foo)();
-    console.log("main.js");
-  }, { "./foo.js": 1 }],
+var _user = require("./user.json");
 
-  "1": [function (require, module, exports) {
-    "use strict";
+var _user2 = _interopRequireDefault(_user);
 
-    Object.defineProperty(exports, "__esModule", {
-      value: true
-    });
-    exports.foo = foo;
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-    var _bar = require("./bar.js");
+console.log(_user2.default);
+(0, _foo.foo)();
+console.log("main.js");
+            },{"./foo.js":1,"./user.json":2} ],
+                
+    "1": [function (require, module, exports) {
+        "use strict";
 
-    function foo() {
-      console.log("foo");
-      (0, _bar.bar)();
-    }
-  }, { "./bar.js": 2 }],
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.foo = foo;
 
-  "2": [function (require, module, exports) {
-    "use strict";
+var _bar = require("./bar.js");
 
-    Object.defineProperty(exports, "__esModule", {
-      value: true
-    });
-    exports.bar = bar;
+function foo() {
+  console.log("foo");
+  (0, _bar.bar)();
+}
+            },{"./bar.js":3} ],
+                
+    "2": [function (require, module, exports) {
+        "use strict";
 
-    function bar() {
-      console.log("bar");
-    }
-  }, {}],
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = "{\n    \"a\": 1,\n    \"b\": 2\n}";
+            },{} ],
+                
+    "3": [function (require, module, exports) {
+        "use strict";
 
-})
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.bar = bar;
+
+function bar() {
+  console.log("bar");
+}
+            },{} ],
+                
+                    })

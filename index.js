@@ -8,7 +8,19 @@ import path from "path";
 import ejs from "ejs"
 //  转换为cjs代码
 import { transformFromAst } from "babel-core"
+import { jsonLoader } from './jsonLoader.js'
 let id = 0
+
+const webpackConfig = {
+    module: {
+        rules: [
+            {
+                test: /\.json$/,
+                use: [jsonLoader],
+            }
+        ]
+    }
+}
 
 
 function createAsset(filePath) {
@@ -17,8 +29,27 @@ function createAsset(filePath) {
     // ast -> 抽象语法树
 
     // 拿到文件内容
-    const source = fs.readFileSync(filePath, {
+    let source = fs.readFileSync(filePath, {
         encoding: "utf-8"
+    })
+
+    // initLoader
+    const loaders = webpackConfig.module.rules
+    const loaderContext = {
+        addDeps(dep) {
+            console.log("addDeps", dep)
+        }
+    }
+
+    loaders.forEach(({ test, use }) => {
+        if (test.test(filePath)) {
+            if (Array.isArray(use)) {
+                use.reverse().forEach((fn) => {
+                    source = fn.call(loaderContext, source)
+                })
+            }
+            // source = use(source)
+        }
     })
 
     // 2. 获取依赖关系
@@ -91,7 +122,7 @@ function build(graph) {
 
     const code = ejs.render(template, { data })
 
-    console.log(data)
+    // console.log(data)
     // console.log(code)
 
     fs.writeFileSync("./dist/bundle.js", code)
